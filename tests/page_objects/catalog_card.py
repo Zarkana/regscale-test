@@ -14,4 +14,4 @@ class CatalogCard:
         return self.type.text
 
     def get_title(self) -> str:
-        return self.title.text
+        return self.name.text
