@@ -1,0 +1,55 @@
+# Ignore Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore environment-related files
+.env
+.venv/
+venv/
+*.env
+*.venv
+myenv/
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Ignore Selenium-related files
+chromedriver.exe
+chromedriver
+geckodriver.exe
+geckodriver
+selenium-screenshot.png
+
+# Ignore dependency files
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignore pytest cache
+.pytest_cache/
+
+# Ignore Jupyter Notebook checkpoints (if using Jupyter)
+.ipynb_checkpoints/
+
+# Ignore test reports (if using pytest or other test frameworks)
+reports/
+test-results/
+allure-results/
+
+# Ignore IDE and editor configuration files
+.vscode/
+.idea/
+*.iml
+.DS_Store
+
+# Ignore coverage reports
+htmlcov/
+.coverage
+.coverage.*
+*.cover
+.nosetests.xml
+test-reports/
