@@ -1,5 +1,6 @@
 import pytest
 from selenium import webdriver
+from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions
@@ -19,24 +20,20 @@ def driver():
     ]
 )
 def test_web_scrape(driver, category_type):
+
     # Arrange
-    # Go to regscale.com
+
+    driver.set_window_size(1920, 1080)
     driver.get("https://regscale.com")
     # Dismiss cookies modal
-    WebDriverWait(driver, 5).until(
-        expected_conditions.presence_of_element_located((By.ID, "hs-eu-confirmation-button"))
-    )
-    driver.find_element(By.ID, "hs-eu-confirmation-button").click()
+    WebDriverWait(driver, 10).until(
+        expected_conditions.element_to_be_clickable((By.ID, "hs-eu-confirmation-button"))
+    ).click()
     # Navigate to Catalogs and Profiles
     primary_menu = driver.find_element(By.ID, "primary-menu")
     hover = ActionChains(driver).move_to_element(primary_menu)
     hover.perform()
-    driver.find_element(By.XPATH, "//*[text()='Catalogs and Profiles']").click()
-    # Dismiss cookies modal
-    WebDriverWait(driver, 5).until(
-        expected_conditions.presence_of_element_located((By.ID, "hs-eu-confirmation-button"))
-    )
-    driver.find_element(By.ID, "hs-eu-confirmation-button").click()
+    driver.find_element(By.LINK_TEXT, 'Catalogs and Profiles').click()
 
     # Act
 
@@ -47,14 +44,15 @@ def test_web_scrape(driver, category_type):
     elif category_type == "other":
         driver.find_element(By.ID, "type-other").click()
 
-    pagination_number_elements = driver.find_elements(By.CLASS_NAME, "page-btn")
     catalog_cards = []
-
-    for pagination_number_element in pagination_number_elements:
-        pagination_number_element.click()
-
+    for _ in range(get_last_page_number(driver)):
         catalog_card_elements = driver.find_elements(By.CLASS_NAME, "catalog-card")
-        catalog_cards + list(map(lambda cat_card: CatalogCard(driver, cat_card), catalog_card_elements))
+        catalog_cards = catalog_cards + list(map(lambda cat_card: CatalogCard(driver, cat_card), catalog_card_elements))
+        try:
+            next_button = driver.find_element(By.CLASS_NAME, "next-btn")
+            ActionChains(driver).move_to_element(next_button).click().perform()
+        except NoSuchElementException:
+            break
 
     # Assert
 
@@ -63,5 +61,10 @@ def test_web_scrape(driver, category_type):
         title_text = catalog_card.get_title()
         print(type_text)
         print(title_text)
-        assert isinstance(type_text, str)
-        assert isinstance(title_text, str)
+        assert isinstance(type_text, str) and type_text != ""
+        assert isinstance(title_text, str) and title_text != ""
+
+def get_last_page_number(driver) -> int:
+    page_number_elements = driver.find_elements(By.CSS_SELECTOR, ".page-btn")
+    last_index = len(page_number_elements) - 1
+    return int(page_number_elements[last_index].text)

@@ -7,11 +7,11 @@ class CatalogCard:
     def __init__(self, driver: WebDriver, catalog_card: WebElement):
         self.driver: WebDriver = driver
         self.card = catalog_card
-        self.type = catalog_card.find_element(By.CLASS_NAME, "catalog-topic")
-        self.name = catalog_card.find_element(By.CLASS_NAME, "title")
+        self.type_text = catalog_card.find_element(By.CLASS_NAME, "topics").text
+        self.name_text = catalog_card.find_element(By.CLASS_NAME, "title").text
 
     def get_type(self) -> str:
-        return self.type.text
+        return self.type_text
 
     def get_title(self) -> str:
-        return self.name.text
+        return self.name_text
